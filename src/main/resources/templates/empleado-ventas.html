@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ventas (Pedidos) - Punto Fácil</title>
+
+    <!-- Si en este proyecto NO usás Bootstrap globalmente, 
+         con estos estilos ya queda lindo igual -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .ventas-contenedor {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .ventas-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        h4 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #1a237e;
+        }
+
+        .filtros {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .filtros .campo {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filtros label {
+            font-size: 0.85rem;
+            margin-bottom: 3px;
+            color: #555;
+        }
+
+        .filtros input[type="date"] {
+            padding: 5px 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            min-width: 160px;
+        }
+
+        .btn-filtrar {
+            padding: 7px 14px;
+            border-radius: 6px;
+            border: none;
+            background-color: #1976d2;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-filtrar:hover {
+            background-color: #1565c0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background-color: #fff;
+        }
+
+        thead {
+            background-color: #1a237e;
+            color: #fff;
+        }
+
+        th, td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .badge-pendiente {
+            background-color: #f57c00;
+        }
+
+        .badge-aprobado {
+            background-color: #2e7d32;
+        }
+
+        .badge-rechazado {
+            background-color: #c62828;
+        }
+
+        .btn-detalle {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            border: 1px solid #757575;
+            background-color: #fafafa;
+            color: #424242;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-detalle:hover {
+            background-color: #e0e0e0;
+        }
+
+        .mensaje-vacio {
+            text-align: center;
+            padding: 15px;
+            font-style: italic;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+<div th:fragment="ventasFragment">
+    <div class="ventas-contenedor">
+        <div class="ventas-card">
+            <h4>Ventas (Pedidos)</h4>
+
+            <!-- Formulario de filtros -->
+            <form class="filtros" th:action="@{/empleado/panel/ventas}" method="get">
+                <div class="campo">
+                    <label>Desde</label>
+                    <input type="date" name="desde" th:value="${desde}" />
+                </div>
+                <div class="campo">
+                    <label>Hasta</label>
+                    <input type="date" name="hasta" th:value="${hasta}" />
+                </div>
+                <div class="campo">
+                    <button class="btn-filtrar">Filtrar</button>
+                </div>
+            </form>
+
+            <!-- Tabla de pedidos -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${pedidos}">
+                        <td th:text="${p.id}">1</td>
+                        <td th:text="${#temporals.format(p.fecha, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
+                        <td th:text="${p.clienteId}">Cliente</td>
+                        <td th:text="${#numbers.formatDecimal(p.total,1,2)}">$0.00</td>
+                        <td>
+                            <span th:class="${p.estado == 'PENDIENTE'} ? 'badge badge-pendiente' : (p.estado == 'APROBADO' ? 'badge badge-aprobado' : 'badge badge-rechazado')"
+                                  th:text="${p.estado}">
+                                PENDIENTE
+                            </span>
+                        </td>
+                        <td>
+                            <a th:href="@{'/empleado/panel/detalle'(pedidoId=${p.id})}"
+                               class="btn-detalle">Ver detalle</a>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(pedidos)}">
+                        <td colspan="6" class="mensaje-vacio">
+                            No hay pedidos en el rango seleccionado.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

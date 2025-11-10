@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Nueva Oferta</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 30px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 10px;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        small {
+            color: #666;
+            font-size: 0.8rem;
+        }
+        button {
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: 600;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #1b5e20;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2><i class="fa-solid fa-tags"></i> Nueva Oferta</h2>
+
+    <form th:action="@{/empleado/ofertas/guardar}" th:object="${oferta}" method="post" enctype="multipart/form-data">
+        <label>Título:</label>
+        <input type="text" th:field="*{titulo}" required>
+
+        <label>Descripción:</label>
+        <textarea th:field="*{descripcion}" rows="4"></textarea>
+
+        <label>Producto asociado:</label>
+        <select th:field="*{producto.id}" required>
+            <option th:each="p : ${productos}" th:value="${p.id}" th:text="${p.nombre}"></option>
+        </select>
+
+        <label>Porcentaje de descuento (%):</label>
+        <input type="number" th:field="*{porcentaje}" min="0" max="100" required>
+        <small>Ej: 20 = 20% de descuento sobre el precio base del producto.</small>
+
+        <label>Imagen:</label>
+        <input type="file" name="imagenFile" accept="image/*">
+
+        <button type="submit"><i class="fa fa-save"></i> Guardar Oferta</button>
+    </form>
+</div>
+</body>
+</html>

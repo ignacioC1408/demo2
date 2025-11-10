@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pago Exitoso - Punto Fácil</title>
+    <style>
+        body { text-align: center; font-family: Arial; padding: 50px; background: #f6fff6; }
+        h1 { color: #27ae60; }
+        a { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #27ae60; color: white; text-decoration: none; border-radius: 5px; }
+        a:hover { background: #219652; }
+    </style>
+</head>
+<body>
+    <h1>✅ ¡Pago realizado con éxito!</h1>
+    <p>Tu compra ha sido procesada correctamente.</p>
+    <a th:href="@{/usuario/productos}">Volver a la tienda</a>
+</body>
+</html>

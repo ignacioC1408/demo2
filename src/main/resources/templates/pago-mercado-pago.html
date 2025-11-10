@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago con Mercado Pago - Punto Fácil</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 20px; 
+            font-family: Arial; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+        }
+        .loading { 
+            text-align: center; 
+            padding: 40px; 
+        }
+        .back-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Procesando Pago</h1>
+            <p>Serás redirigido a Mercado Pago para completar tu compra</p>
+            <p><strong>Monto:</strong> $<span th:text="${#numbers.formatDecimal(monto, 1, 2)}">0.00</span></p>
+        </div>
+
+        <div class="loading" id="loading">
+            <p>🔄 Cargando checkout de Mercado Pago...</p>
+        </div>
+
+        <!-- SDK de Mercado Pago -->
+        <script src="https://sdk.mercadopago.com/js/v2"></script>
+        
+        <div id="checkout" style="display: none;"></div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a th:href="@{/usuario/carrito/ver}" class="back-button">Volver al Carrito</a>
+        </div>
+    </div>
+
+    <script>
+        // Inicializar Mercado Pago
+        const mp = new MercadoPago('[[${publicKey}]]', {
+            locale: 'es-AR'
+        });
+
+        // Obtener preferenceId del modelo
+        const preferenceId = '[[${preferenceId}]]';
+
+        // Crear checkout
+        mp.checkout({
+            preference: {
+                id: preferenceId
+            },
+            render: {
+                container: '#checkout',
+                label: 'Pagar con Mercado Pago',
+            }
+        });
+
+        // Ocultar loading y mostrar checkout
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('checkout').style.display = 'block';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

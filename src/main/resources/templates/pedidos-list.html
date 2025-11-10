@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Pedidos en tiempo real - Punto Fácil</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #1a237e;
+      text-align: center;
+    }
+    .filtros {
+      margin: 15px auto;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    select {
+      padding: 5px 10px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 90%;
+      margin: 0 auto;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background-color: #1a237e;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .estado-PENDIENTE { color: #f57c00; font-weight: bold; }
+    .estado-EN_PREPARACION { color: #1565c0; font-weight: bold; }
+    .estado-LISTO { color: #2e7d32; font-weight: bold; }
+    .estado-ENTREGADO { color: #616161; font-weight: bold; }
+    .badge {
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 0.9em;
+      color: white;
+    }
+    .badge.PENDIENTE { background-color: #f57c00; }
+    .badge.EN_PREPARACION { background-color: #1976d2; }
+    .badge.LISTO { background-color: #2e7d32; }
+    .badge.ENTREGADO { background-color: #616161; }
+  </style>
+</head>
+<body>
+  <h1>Pedidos en tiempo real</h1>
+
+  <div class="filtros">
+    <div>
+      <label for="filtro-estado"><b>Filtrar por estado:</b></label>
+      <select id="filtro-estado">
+        <option value="">Todos</option>
+        <option value="PENDIENTE">Pendiente</option>
+        <option value="EN_PREPARACION">En preparación</option>
+        <option value="LISTO">Listo</option>
+        <option value="ENTREGADO">Entregado</option>
+      </select>
+    </div>
+    <div>
+      <small>Actualizando cada 5 segundos ⏱️</small>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Código retiro</th>
+        <th>Usuario</th>
+        <th>Fecha</th>
+        <th>Total</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody id="tbody-pedidos">
+      <!-- Render inicial para que funcione aunque JS esté desactivado -->
+      <tr th:each="p : ${pedidos}">
+        <td th:text="${p.id}">1</td>
+        <td th:text="${p.codigoRetiro}">ABC123</td>
+        <td th:text="${p.usuario != null ? p.usuario.nombre : 'Sin usuario'}">Usuario</td>
+        <td th:text="${#temporals.format(p.fecha, 'dd/MM/yyyy HH:mm')}">01/01/2025 12:00</td>
+        <td th:text="${#numbers.formatDecimal(p.total, 1, 'POINT', 2, 'POINT')}">$0,00</td>
+        <td>
+          <span th:text="${p.estado}" 
+                th:class="'badge ' + ${p.estado}">
+            PENDIENTE
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script>
+    async function cargarPedidos() {
+      const estadoSelect = document.getElementById('filtro-estado');
+      const estado = estadoSelect.value;
+      const url = '/empleado/panel/pedidos/api' + (estado ? ('?estado=' + encodeURIComponent(estado)) : '');
+
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) return;
+        const data = await resp.json();
+
+        const tbody = document.getElementById('tbody-pedidos');
+        tbody.innerHTML = '';
+
+        data.forEach(p => {
+          const tr = document.createElement('tr');
+
+          tr.innerHTML = `
+            <td>${p.id}</td>
+            <td>${p.codigoRetiro || ''}</td>
+            <td>${p.usuario || ''}</td>
+            <td>${p.fecha || ''}</td>
+            <td>${p.total != null ? p.total : ''}</td>
+            <td><span class="badge ${p.estado}">${p.estado || ''}</span></td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error('Error actualizando pedidos', e);
+      }
+    }
+
+    // Cambio de filtro = recargar
+    document.getElementById('filtro-estado').addEventListener('change', cargarPedidos);
+
+    // Primera carga + actualización cada 5 segundos
+    window.addEventListener('load', cargarPedidos);
+    setInterval(cargarPedidos, 5000);
+  </script>
+</body>
+</html>

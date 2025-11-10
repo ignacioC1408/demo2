@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ofertas vigentes - Punto Fácil</title>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+        }
+
+        header {
+            background-color: #1a237e;
+            color: white;
+            text-align: center;
+            padding: 20px 10px;
+            font-size: 22px;
+            position: relative;
+        }
+
+        header img {
+            height: 40px;
+            position: absolute;
+            left: 30px;
+            top: 10px;
+        }
+
+        .contenedor {
+            padding: 30px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            max-width: 1100px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            color: #1a237e;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .btn-green { background-color: #2e7d32; }
+        .btn-green:hover { background-color: #1b5e20; }
+
+        .btn-secondary {
+            background-color: #757575;
+        }
+        .btn-secondary:hover {
+            background-color: #616161;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        thead {
+            background-color: #283593;
+            color: white;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        tbody tr:hover {
+            background-color: #eef2ff;
+        }
+
+        .badge-desc {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background-color: #e3f2fd;
+            color: #1565c0;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .precio {
+            font-weight: 600;
+            color: #1b5e20;
+        }
+
+        .img-oferta {
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .sin-datos {
+            text-align: center;
+            padding: 20px 0;
+            color: #757575;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .panel {
+                padding: 15px;
+            }
+
+            th, td {
+                font-size: 12px;
+                padding: 8px;
+            }
+
+            .panel-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="/images/logo-puntofacil.png" alt="Logo Punto Fácil">
+    Ofertas vigentes
+</header>
+
+<div class="contenedor">
+    <div class="panel">
+
+        <div class="panel-header">
+            <h2><i class="fa-solid fa-tags"></i> Ofertas vigentes</h2>
+
+            <div>
+                <a href="/empleado/panel/admin" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> Volver al panel
+                </a>
+                <a href="/empleado/ofertas/nuevo" class="btn btn-green">
+                    <i class="fa-solid fa-plus"></i> Nueva oferta
+                </a>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Producto</th>
+                <th>% Desc.</th>
+                <th>Precio oferta</th>
+                <th>Imagen</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="o : ${ofertas}">
+                <td th:text="${o.id}">1</td>
+                <td th:text="${o.titulo}">Título</td>
+                <td th:text="${o.producto != null ? o.producto.nombre : 'Sin producto'}">
+                    Producto
+                </td>
+                <td>
+                    <span class="badge-desc" th:text="${o.porcentaje} + '%'">0%</span>
+                </td>
+                <td class="precio"
+                    th:text="${#numbers.formatDecimal(o.precioOferta, 1, 2)}">
+                    $0,00
+                </td>
+                <td>
+                    <img th:if="${o.imagen != null}"
+                         th:src="@{'/uploads/' + ${o.imagen}}"
+                         alt="Imagen oferta"
+                         width="80"
+                         class="img-oferta">
+                    <span th:if="${o.imagen == null}" class="sin-datos">Sin imagen</span>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(ofertas)}">
+                <td colspan="6" class="sin-datos">
+                    No hay ofertas cargadas.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+</body>
+</html>
+

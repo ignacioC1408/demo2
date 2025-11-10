@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Empleado - Punto Fácil</title>
+    <link rel="icon" href="/images/logo.png">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(120deg, #1e3c72, #2a5298);
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .login-container {
+            width: 380px;
+            margin: 100px auto;
+            padding: 30px;
+            background: #fff;
+            color: #333;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.4);
+        }
+
+        img {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #2a5298;
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #aaa;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 95%;
+            padding: 12px;
+            background-color: #2a5298;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #1e3c72;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <img src="/images/logo.png" alt="Logo Punto Fácil">
+        <h2>Ingreso Empleado</h2>
+        <form th:action="@{/empleado/login}" method="post">
+            <input type="text" name="username" placeholder="Usuario" required>
+            <input type="password" name="password" placeholder="Contraseña" required>
+            <button type="submit">Ingresar</button>
+        </form>
+
+        <div th:if="${error}" class="error" th:text="${error}"></div>
+    </div>
+
+    <footer>
+        <p>© 2025 Punto Fácil - Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

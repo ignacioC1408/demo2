@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pago Pendiente - Punto Fácil</title>
+    <style>
+        body { text-align: center; font-family: Arial; padding: 50px; background: #fffbea; }
+        h1 { color: #f39c12; }
+        a { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #f39c12; color: white; text-decoration: none; border-radius: 5px; }
+        a:hover { background: #d68910; }
+    </style>
+</head>
+<body>
+    <h1>⚠️ Pago Pendiente</h1>
+    <p>Tu pago está siendo procesado. Te notificaremos cuando se confirme.</p>
+    <a th:href="@{/usuario/productos}">Volver a la tienda</a>
+</body>
+</html>

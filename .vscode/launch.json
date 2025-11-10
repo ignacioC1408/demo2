@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Panel Empleados (8082)",
+            "request": "launch",
+            "mainClass": "com.example.puntofacil.demo.PuntoFacilApplication",
+            "projectName": "demo",
+            "args": ["--server.port=8082"]
+        },
+        {
+            "type": "java",
+            "name": "Usuario Pedidos (8081)",
+            "request": "launch", 
+            "mainClass": "com.example.puntofacil.demo.PuntoFacilApplication",
+            "projectName": "demo",
+            "args": ["--server.port=8081"]
+        }
+    ]
+}

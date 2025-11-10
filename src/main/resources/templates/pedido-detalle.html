@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>Detalle Pedido</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <style>
+    .badge-pend { background: #f59e0b; color:white; padding:6px 10px; border-radius:8px;}
+    .badge-paid { background: #10b981; color:white; padding:6px 10px; border-radius:8px;}
+    .badge-rej { background: #ef4444; color:white; padding:6px 10px; border-radius:8px;}
+    header{background:#0d3b66;color:#fff;padding:10px;}
+  </style>
+</head>
+<body>
+<header>
+  <img src="/img/logo.png" style="height:40px;">
+  <span style="margin-left:10px;">Detalle de Pedido</span>
+  <a th:href="@{/empleado/panel}" class="btn btn-light" style="float:right;">Volver</a>
+</header>
+
+<div class="container mt-4">
+  <h3 th:text="'Pedido #' + ${pedido.id}">Pedido #1</h3>
+  <div>
+    <strong>Código retiro:</strong> <span th:text="${pedido.codigoRetiro}">ABC123</span>
+  </div>
+  <div>
+    <strong>Estado:</strong>
+    <span th:class="${pedido.estado == 'PENDIENTE' ? 'badge-pend' : (pedido.estado=='ENTREGADO' ? 'badge-paid' : 'badge-rej')}" th:text="${pedido.estado}">PENDIENTE</span>
+  </div>
+
+  <h5 class="mt-3">Productos</h5>
+  <table class="table">
+    <thead><tr><th>Producto</th><th>Cantidad</th><th>Precio unit.</th><th>Subtotal</th></tr></thead>
+    <tbody>
+      <tr th:each="d : ${pedido.detalles}">
+        <td th:text="${d.producto.nombre}">Nombre</td>
+        <td th:text="${d.cantidadUnidad}">1</td>
+        <td th:text="'$' + ${#numbers.formatDecimal(d.precioUnitario,1,2,'COMMA')}">$0,00</td>
+        <td th:text="'$' + ${#numbers.formatDecimal(d.precioUnitario.multiply(d.cantidadUnidad),1,2,'COMMA')}">$0,00</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="display:flex; gap:10px; margin-top:15px;">
+    <form th:action="@{'/empleado/pedido/' + ${pedido.id} + '/estado'}" method="post">
+      <input type="hidden" name="estado" value="PENDIENTE" />
+      <button class="btn btn-warning">Marcar PENDIENTE</button>
+    </form>
+    <form th:action="@{'/empleado/pedido/' + ${pedido.id} + '/estado'}" method="post">
+      <input type="hidden" name="estado" value="EN_CAMINO" />
+      <button class="btn btn-primary">Marcar EN_CAMINO</button>
+    </form>
+    <form th:action="@{'/empleado/pedido/' + ${pedido.id} + '/estado'}" method="post">
+      <input type="hidden" name="estado" value="ENTREGADO" />
+      <button class="btn btn-success">Marcar ENTREGADO</button>
+    </form>
+    <form th:action="@{'/empleado/pedido/' + ${pedido.id} + '/estado'}" method="post">
+      <input type="hidden" name="estado" value="RECHAZADO" />
+      <button class="btn btn-danger">Marcar RECHAZADO</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

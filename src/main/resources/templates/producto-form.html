@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Nuevo Producto - Punto Fácil</title>
+  <style>
+    body { font-family: Arial; background-color: #f9f9f9; }
+    header { background-color: #283593; color: white; text-align: center; padding: 15px; font-weight: bold; }
+    form {
+      width: 400px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 15px;
+      width: 100%;
+      background-color: #1a237e;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #3949ab; }
+
+    .preview-img {
+      margin-top: 10px;
+      max-width: 100%;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <header>Agregar / Editar Producto</header>
+
+  <!-- 🔹 enctype agregado para permitir archivos -->
+  <form th:action="@{/empleado/productos/guardar}"
+        method="post"
+        th:object="${producto}"
+        enctype="multipart/form-data">
+
+    <!-- id oculto para edición -->
+    <input type="hidden" th:field="*{id}" />
+
+    <label>Código Producto:</label>
+    <input type="text" th:field="*{codigoProducto}" required>
+
+    <label>Nombre:</label>
+    <input type="text" th:field="*{nombre}" required>
+
+    <label>Precio Base:</label>
+    <input type="number" step="0.01" th:field="*{precioBase}" required>
+
+    <label>Unidad de Medida:</label>
+    <select th:field="*{unidadMedida}">
+      <option value="KG">KG</option>
+      <option value="LT">LT</option>
+      <option value="UNIDAD">UNIDAD</option>
+    </select>
+
+    <label>Stock:</label>
+    <input type="number" step="0.001" th:field="*{stock}" required>
+
+    <label>Categoría ID:</label>
+    <input type="number" th:field="*{categoriaId}" required>
+
+    <!-- 🔹 NUEVO: campo de imagen -->
+    <label>Imagen del producto:</label>
+    <input type="file" name="imagenFile" accept="image/*">
+
+    <!-- 🔹 si estoy editando, mostrar imagen actual -->
+    <div th:if="${producto.imagen != null}">
+      <p>Imagen actual:</p>
+      <img class="preview-img"
+           th:src="@{'/uploads/' + ${producto.imagen}}"
+           alt="Imagen actual del producto">
+    </div>
+
+    <button type="submit">Guardar Producto</button>
+  </form>
+</body>
+</html>

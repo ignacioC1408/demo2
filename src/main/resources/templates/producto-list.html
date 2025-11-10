@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Productos - Punto Fácil</title>
+  <style>
+    body { font-family: Arial; background-color: #f7f9fc; }
+    header { background-color: #1a237e; color: white; padding: 15px; font-weight: bold; text-align: center; }
+    a { text-decoration: none; color: #1a237e; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #1a237e; color: white; }
+    .btn { padding: 5px 10px; border-radius: 5px; }
+    .edit { background-color: #1976d2; color: white; }
+    .delete { background-color: #d32f2f; color: white; }
+    .new { display: inline-block; margin-top: 10px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <header>Punto Fácil - Administración de Productos</header>
+
+  <div style="padding: 20px;">
+    <a href="/empleado/productos/nuevo" class="new">+ Agregar Nuevo Producto</a>
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="p : ${productos}">
+          <td th:text="${p.codigoProducto}"></td>
+          <td th:text="${p.nombre}"></td>
+          <td th:text="${#numbers.formatDecimal(p.precioBase, 1, 2)}"></td>
+          <td th:text="${p.stock}"></td>
+          <td>
+            <a th:href="@{'/empleado/productos/editar/' + ${p.id}}" class="btn edit">Editar</a>
+            <form th:action="@{'/empleado/productos/borrar/' + ${p.id}}" method="post" style="display:inline;">
+              <button type="submit" class="btn delete">Borrar</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

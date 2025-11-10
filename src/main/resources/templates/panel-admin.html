@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel del Administrador - Punto Fácil</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+    }
+    header {
+      background-color: #1a237e;
+      color: white;
+      text-align: center;
+      padding: 20px 10px;
+      font-size: 24px;
+      position: relative;
+    }
+    header img {
+      height: 50px;
+      position: absolute;
+      left: 30px;
+      top: 10px;
+    }
+    nav {
+      background-color: #283593;
+      display: flex;
+      justify-content: center;
+      padding: 10px 0;
+      gap: 40px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 8px 16px;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    nav a:hover {
+      background-color: #3949ab;
+    }
+    .contenedor {
+      padding: 30px;
+      text-align: center;
+    }
+    h2 {
+      color: #1a237e;
+      margin-bottom: 10px;
+    }
+    .panel {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      margin: 30px auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 80%;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 15px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      margin: 10px;
+    }
+    .btn-green { background-color: #2e7d32; }
+    .btn-blue { background-color: #1976d2; }
+    .btn-orange { background-color: #f57c00; }
+    .btn-red { background-color: #c62828; }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="/images/logo-puntofacil.png" alt="Logo Punto Fácil">
+    Punto Fácil - Panel del Administrador
+  </header>
+
+  <nav>
+    <a href="/empleado/panel/inicio">🏠 Inicio</a>
+    <a href="/empleado/panel/ventas">💰 Ventas</a>
+    <a href="/empleado/panel/stock">📦 Stock</a>
+    <a href="/empleado/productos">🛒 Productos</a>
+    <a href="/empleado/panel/pedidos">🧾 Pedidos</a>
+    <!-- 🟢 Nueva solapa de Ofertas -->
+    <a href="/empleado/ofertas">🏷️ Ofertas</a>
+  </nav>
+
+  <div class="contenedor">
+    <div class="panel">
+      <h2>Gestión Rápida</h2>
+      <p>Bienvenido al panel del administrador. Desde aquí puedes controlar el negocio.</p>
+      <a href="/empleado/productos/nuevo" class="btn btn-green">➕ Agregar Producto</a>
+      <a href="/empleado/productos" class="btn btn-blue">📋 Ver Productos</a>
+      <a href="/empleado/panel/ventas" class="btn btn-orange">📊 Ver Ventas</a>
+      <a href="/empleado/logout" class="btn btn-red">🚪 Cerrar Sesión</a>
+    </div>
+  </div>
+</body>
+</html>

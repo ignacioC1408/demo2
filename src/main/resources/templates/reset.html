@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Restablecer contraseña - Punto Fácil</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="login-body">
+    <div class="login-card">
+        <h2>Restablecer contraseña</h2>
+
+        <form th:action="@{/reset}" method="post">
+            <input type="hidden" name="token" th:value="${token}">
+            <div class="form-row">
+                <label>Nueva contraseña</label>
+                <input type="password" name="newPassword" required>
+            </div>
+            <div class="form-row">
+                <button type="submit" class="btn">Cambiar contraseña</button>
+            </div>
+        </form>
+
+        <div th:if="${error}" th:text="${error}"></div>
+        <p><a th:href="@{/login}">Volver al login</a></p>
+    </div>
+</body>
+</html>

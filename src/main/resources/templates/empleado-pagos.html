@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<body>
+    <div th:fragment="pagosFragment">
+        <div class="card p-3">
+            <h4>Seguimiento de Pagos</h4>
+
+            <form class="mb-3 row g-2" th:action="@{/empleado/panel/pagos}" method="get">
+                <div class="col-auto">
+                    <label class="form-label small">Estado</label>
+                    <select name="estado" class="form-select">
+                        <option th:selected="${estado=='PENDIENTE'}" value="PENDIENTE">PENDIENTE</option>
+                        <option th:selected="${estado=='APROBADO'}" value="APROBADO">APROBADO</option>
+                        <option th:selected="${estado=='RECHAZADO'}" value="RECHAZADO">RECHAZADO</option>
+                    </select>
+                </div>
+                <div class="col-auto align-self-end">
+                    <button class="btn btn-primary">Filtrar</button>
+                </div>
+            </form>
+
+            <div th:if="${#lists.isEmpty(pedidos)}">No hay pedidos con ese estado.</div>
+            <div th:each="p : ${pedidos}" class="mb-2 p-2 border rounded">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div><strong>Pedido #</strong> <span th:text="${p.id}"></span></div>
+                        <div><small th:text="${#temporals.format(p.fecha,'dd/MM/yyyy HH:mm')}"></small></div>
+                    </div>
+                    <div>
+                        <span th:if="${p.estado=='PENDIENTE'}" class="badge badge-pendiente">PENDIENTE</span>
+                        <span th:if="${p.estado=='APROBADO'}" class="badge badge-aprobado">APROBADO</span>
+                        <span th:if="${p.estado=='RECHAZADO'}" class="badge badge-rechazado">RECHAZADO</span>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <strong>Total:</strong> <span th:text="${#numbers.formatDecimal(p.total,1,2)}">$0.00</span>
+                    <a th:href="@{'/empleado/panel/detalle'(pedidoId=${p.id})}" class="btn btn-sm btn-outline-secondary ms-3">Ver detalle</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

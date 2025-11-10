@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Recuperar contraseña - Punto Fácil</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="login-body">
+    <div class="login-card">
+        <h2>Recuperar contraseña</h2>
+
+        <form th:action="@{/forgot}" method="post">
+            <div class="form-row">
+                <label>Usuario o Email</label>
+                <input type="text" name="usernameOrEmail" placeholder="usuario o email" required>
+            </div>
+            <div class="form-row">
+                <button type="submit" class="btn">Generar token</button>
+            </div>
+        </form>
+
+        <div th:if="${message}" th:text="${message}"></div>
+        <div th:if="${resetLink}">
+            <p>Link (dev): <a th:href="${resetLink}" th:text="${resetLink}"></a></p>
+        </div>
+
+        <p><a th:href="@{/login}">Volver al login</a></p>
+    </div>
+</body>
+</html>

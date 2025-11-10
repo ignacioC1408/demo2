@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Productos - Punto Fácil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .contenedor {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 25px;
+        }
+
+        h4 {
+            color: #1a237e;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .header-tabla {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .btn-agregar {
+            background-color: #2e7d32;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-agregar:hover {
+            background-color: #1b5e20;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background-color: #1a237e;
+            color: white;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.95rem;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .btn {
+            padding: 5px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-outline-primary {
+            color: #1976d2;
+            border: 1px solid #1976d2;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #1976d2;
+            color: white;
+        }
+
+        .btn-outline-danger {
+            color: #c62828;
+            border: 1px solid #c62828;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #c62828;
+            color: white;
+        }
+
+        .sin-productos {
+            text-align: center;
+            color: #777;
+            padding: 15px;
+            font-style: italic;
+        }
+
+        .fa-boxes {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+<div th:fragment="productosFragment">
+    <div class="contenedor">
+        <div class="header-tabla">
+            <h4><i class="fa-solid fa-boxes"></i> Productos</h4>
+
+            <!-- 🔴 CAMBIADO: antes /empleado/panel/productos/nuevo -->
+            <a th:href="@{/empleado/productos/nuevo}" class="btn-agregar">
+                <i class="fa fa-plus"></i> Nuevo
+            </a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p : ${productos}">
+                    <td th:text="${p.id}">1</td>
+                    <td th:text="${p.nombre}">Nombre</td>
+                    <td th:text="${#numbers.formatDecimal(p.precioBase,1,2)}">$0.00</td>
+                    <td th:text="${p.stock}">0</td>
+                    <td>
+                        <!-- 🔴 CAMBIADO: antes /empleado/panel/productos/editar -->
+                        <a th:href="@{'/empleado/productos/editar'(id=${p.id})}"
+                           class="btn btn-outline-primary">
+                            <i class="fa fa-edit"></i> Editar
+                        </a>
+
+                        <!-- 🔴 CAMBIADO: antes /empleado/panel/productos/eliminar -->
+                        <a th:href="@{'/empleado/productos/eliminar'(id=${p.id})}"
+                           class="btn btn-outline-danger"
+                           onclick="return confirm('¿Eliminar producto?')">
+                            <i class="fa fa-trash"></i> Eliminar
+                        </a>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(productos)}">
+                    <td colspan="5" class="sin-productos">
+                        <i class="fa-solid fa-box-open"></i> No hay productos.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

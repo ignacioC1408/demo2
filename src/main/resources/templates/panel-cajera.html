@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Punto Fácil - Panel Cajera</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff0f5;
+      color: #333;
+    }
+    header {
+      background-color: #ad1457;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-weight: bold;
+      border-bottom: 4px solid #c2185b;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background-color: #c2185b;
+      padding: 10px;
+      gap: 25px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .contenido {
+      text-align: center;
+      padding: 25px;
+    }
+    .logo {
+      width: 100px;
+      float: left;
+      margin-right: 15px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="/images/logo.png" alt="Punto Fácil" class="logo">
+    Punto Fácil - Panel de la Cajera
+  </header>
+
+  <nav>
+    <a href="/empleado/productos">Productos</a>
+    <a href="/empleado/ventas">Ventas del Día</a>
+    <!-- 🔹 Nueva solapa -->
+    <a href="/empleado/panel/pedidos">Pedidos en tiempo real</a>
+    <a href="/empleado/logout">Cerrar sesión</a>
+  </nav>
+
+  <div class="contenido">
+    <h2>Bienvenida, <span th:text="${usuario}"></span></h2>
+    <p>Rol: <b th:text="${rol}"></b></p>
+    <p>Desde aquí podés registrar pagos y verificar ventas del día.</p>
+  </div>
+</body>
+</html>
