@@ -33,11 +33,33 @@
     <div class="row g-4">
         <div class="col-md-4" th:each="p : ${productos}">
             <div class="card h-100 text-center">
-                <img src="/images/default.png" class="card-img-top" alt="Producto">
+
+                <!-- 🖼️ Imagen del producto -->
+                <!-- Si el producto tiene imagen, se muestra la subida -->
+                <img th:if="${p.imagen != null}"
+                     th:src="@{'/uploads/' + ${p.imagen}}"
+                     class="card-img-top"
+                     alt="Imagen [[${p.nombre}]]"
+                     style="height: 180px; object-fit: cover;">
+
+                <!-- Si NO tiene imagen, se usa la imagen por defecto -->
+                <img th:if="${p.imagen == null}"
+                     src="/images/default.png"
+                     class="card-img-top"
+                     alt="Producto"
+                     style="height: 180px; object-fit: cover;">
+
                 <div class="card-body">
                     <h5 th:text="${p.nombre}">Nombre</h5>
-                    <p><strong>Código:</strong> <span th:text="${p.codigoProducto}"></span></p>
-                    <p><strong>Stock:</strong> <span th:text="${p.stock}"></span> <span th:text="${p.unidadMedida}"></span></p>
+                    <p>
+                        <strong>Código:</strong>
+                        <span th:text="${p.codigoProducto}"></span>
+                    </p>
+                    <p>
+                        <strong>Stock:</strong>
+                        <span th:text="${p.stock}"></span>
+                        <span th:text="${p.unidadMedida}"></span>
+                    </p>
                     <p class="price" th:text="'$' + ${p.precioBase}"></p>
 
                     <form th:action="@{/usuario/carrito/agregar}" method="post">
@@ -51,3 +73,4 @@
 </div>
 </body>
 </html>
+

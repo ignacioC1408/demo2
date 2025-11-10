@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Nuevo Producto - Punto Fácil</title>
   <style>
-    body { font-family: Arial; background-color: #f9f9f9; }
+    body { font-family: Arial; background-color: #f9f9f9; margin:0; }
     header { background-color: #283593; color: white; text-align: center; padding: 15px; font-weight: bold; }
     form {
       width: 400px;
@@ -33,25 +33,25 @@
       cursor: pointer;
     }
     button:hover { background-color: #3949ab; }
-
-    .preview-img {
+    .img-preview {
       margin-top: 10px;
+      text-align: center;
+    }
+    .img-preview img {
       max-width: 100%;
-      border-radius: 5px;
-      border: 1px solid #ddd;
+      max-height: 150px;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
   <header>Agregar / Editar Producto</header>
 
-  <!-- 🔹 enctype agregado para permitir archivos -->
-  <form th:action="@{/empleado/productos/guardar}"
-        method="post"
-        th:object="${producto}"
-        enctype="multipart/form-data">
+  <!-- 👇 MULTIPART para permitir archivos -->
+  <form th:action="@{/empleado/productos/guardar}" method="post"
+        th:object="${producto}" enctype="multipart/form-data">
 
-    <!-- id oculto para edición -->
+    <!-- id oculto -->
     <input type="hidden" th:field="*{id}" />
 
     <label>Código Producto:</label>
@@ -76,16 +76,14 @@
     <label>Categoría ID:</label>
     <input type="number" th:field="*{categoriaId}" required>
 
-    <!-- 🔹 NUEVO: campo de imagen -->
+    <!-- 🖼 NUEVO: Imagen del producto -->
     <label>Imagen del producto:</label>
     <input type="file" name="imagenFile" accept="image/*">
 
-    <!-- 🔹 si estoy editando, mostrar imagen actual -->
-    <div th:if="${producto.imagen != null}">
+    <!-- Vista previa si ya tiene imagen -->
+    <div class="img-preview" th:if="*{imagen} != null">
       <p>Imagen actual:</p>
-      <img class="preview-img"
-           th:src="@{'/uploads/' + ${producto.imagen}}"
-           alt="Imagen actual del producto">
+      <img th:src="@{'/uploads/' + *{imagen}}" alt="Imagen producto">
     </div>
 
     <button type="submit">Guardar Producto</button>

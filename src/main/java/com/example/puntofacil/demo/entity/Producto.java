@@ -31,17 +31,15 @@ public class Producto {
     private BigDecimal precioBase;
 
     @Column(name = "unidad_medida", length = 10)
-    private String unidadMedida; // "UNIDAD", "KG", "GR", "LT", "ML"
+    private String unidadMedida;
 
     @Column(precision = 10, scale = 3)
     private BigDecimal stock;
 
-    // ✅ Campo para categoría (ya lo tenías)
     @Column(name = "categoria_id")
-    private Long categoriaId = 1L; // Valor por defecto
+    private Long categoriaId = 1L;
 
-    // ✅ NUEVO: nombre de archivo de la imagen del producto
-    // Se guarda solo el nombre, NO el binario.
+    // 🆕 Imagen del producto (nombre de archivo)
     @Column(name = "imagen", length = 255)
     private String imagen;
 
@@ -55,12 +53,10 @@ public class Producto {
         this.precioBase = precioBase;
         this.unidadMedida = unidadMedida;
         this.stock = stock;
-        this.categoriaId = 1L; // Valor por defecto en constructor
+        this.categoriaId = 1L;
     }
 
-    // =======================
-    // Getters y Setters
-    // =======================
+    // getters y setters...
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -86,7 +82,6 @@ public class Producto {
     public Long getCategoriaId() { return categoriaId; }
     public void setCategoriaId(Long categoriaId) { this.categoriaId = categoriaId; }
 
-    // ✅ NUEVOS getter/setter para imagen
     public String getImagen() { return imagen; }
     public void setImagen(String imagen) { this.imagen = imagen; }
 }

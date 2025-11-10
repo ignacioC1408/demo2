@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -20,70 +21,64 @@ import com.example.puntofacil.demo.entity.Producto;
 import com.example.puntofacil.demo.repository.ProductoRepository;
 
 @Controller
-@RequestMapping("/empleado/productos")   // 👈 rutas del panel empleado
+@RequestMapping("/empleado/productos")
 public class EmpleadoProductoController {
 
     private final ProductoRepository productoRepository;
 
     @Value("${upload.path}")
-    private String uploadPath;
+    private String uploadPath;   // ./uploads (definido en application.properties)
 
     public EmpleadoProductoController(ProductoRepository productoRepository) {
         this.productoRepository = productoRepository;
     }
 
-    // LISTA DEL PANEL (la tabla azul que ya tenés)
+    // LISTA
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("productos", productoRepository.findAll());
-        return "empleado-productos";   // tu plantilla de listado de productos
+        return "producto-list";  // tu tabla linda de productos
     }
 
-    // FORM NUEVO
+    // NUEVO
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         model.addAttribute("producto", new Producto());
         return "producto-form";
     }
 
-    // FORM EDITAR
+    // EDITAR
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id, Model model) {
-        Producto producto = productoRepository.findById(id).orElse(null);
-        if (producto == null) {
-            return "redirect:/empleado/productos";
-        }
-        model.addAttribute("producto", producto);
+        Producto p = productoRepository.findById(id).orElse(null);
+        if (p == null) return "redirect:/empleado/productos";
+        model.addAttribute("producto", p);
         return "producto-form";
     }
 
-    // GUARDAR (NUEVO / EDITAR) + IMAGEN
+    // GUARDAR (nuevo o edición)
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute Producto producto,
-                          @RequestParam(name = "imagenFile", required = false) MultipartFile imagenFile) {
+                          @RequestParam("imagenFile") MultipartFile imagenFile) throws IOException {
 
-        try {
-            // Si NO sube imagen nueva y es edición, conservar la anterior
-            if ((imagenFile == null || imagenFile.isEmpty()) && producto.getId() != null) {
-                productoRepository.findById(producto.getId()).ifPresent(pExistente ->
-                        producto.setImagen(pExistente.getImagen())
-                );
-            }
+        // Si estoy editando, conservar la imagen si no se sube una nueva
+        if ((producto.getId() != null) && (imagenFile == null || imagenFile.isEmpty())) {
+            productoRepository.findById(producto.getId())
+                    .ifPresent(pAnt -> producto.setImagen(pAnt.getImagen()));
+        }
 
-            // Si sube imagen nueva, guardar archivo y setear nombre
-            if (imagenFile != null && !imagenFile.isEmpty()) {
-                Path uploadDir = Paths.get(uploadPath).toAbsolutePath().normalize();
+        // Si viene una imagen nueva, guardarla en /uploads
+        if (imagenFile != null && !imagenFile.isEmpty()) {
+            Path uploadDir = Paths.get(uploadPath);
+            if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
-
-                String filename = System.currentTimeMillis() + "_" + imagenFile.getOriginalFilename();
-                Path destino = uploadDir.resolve(filename);
-
-                imagenFile.transferTo(destino.toFile());
-
-                producto.setImagen(filename);
             }
-        } catch (IOException e) {
-            e.printStackTrace(); // si falla la imagen, igual seguimos guardando el producto
+
+            String fileName = System.currentTimeMillis() + "_" + imagenFile.getOriginalFilename();
+            Path destino = uploadDir.resolve(fileName);
+            Files.copy(imagenFile.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+
+            producto.setImagen(fileName);
         }
 
         productoRepository.save(producto);
