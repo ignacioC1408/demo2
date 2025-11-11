@@ -2,219 +2,114 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Ofertas vigentes - Punto Fácil</title>
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <title>Ofertas - Punto Fácil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
+            background-color: #f4f6f9;
             font-family: 'Segoe UI', sans-serif;
-            background-color: #f4f6f8;
-            margin: 0;
         }
-
-        header {
-            background-color: #1a237e;
-            color: white;
-            text-align: center;
-            padding: 20px 10px;
-            font-size: 22px;
-            position: relative;
+        .titulo-pagina {
+            margin-top: 20px;
+            margin-bottom: 10px;
         }
-
-        header img {
-            height: 40px;
-            position: absolute;
-            left: 30px;
-            top: 10px;
-        }
-
-        .contenedor {
-            padding: 30px;
-        }
-
-        .panel {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            margin: 0 auto;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            max-width: 1100px;
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .panel-header h2 {
-            margin: 0;
-            color: #1a237e;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 8px 14px;
-            border-radius: 8px;
-            text-decoration: none;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .btn-green { background-color: #2e7d32; }
-        .btn-green:hover { background-color: #1b5e20; }
-
-        .btn-secondary {
-            background-color: #757575;
-        }
-        .btn-secondary:hover {
-            background-color: #616161;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        thead {
-            background-color: #283593;
-            color: white;
-        }
-
-        th, td {
-            padding: 10px 12px;
-            text-align: left;
-            font-size: 14px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        tbody tr:nth-child(even) {
-            background-color: #f9fafb;
-        }
-
-        tbody tr:hover {
-            background-color: #eef2ff;
-        }
-
-        .badge-desc {
-            display: inline-block;
-            padding: 4px 8px;
+        .card-oferta {
             border-radius: 12px;
-            background-color: #e3f2fd;
-            color: #1565c0;
-            font-size: 12px;
-            font-weight: 600;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        .precio {
-            font-weight: 600;
-            color: #1b5e20;
+        .card-oferta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.15);
         }
-
-        .img-oferta {
-            border-radius: 6px;
-            border: 1px solid #e0e0e0;
+        .card-oferta img {
+            height: 180px;
+            object-fit: cover;
         }
-
-        .sin-datos {
-            text-align: center;
-            padding: 20px 0;
-            color: #757575;
+        .badge-vigencia {
+            font-size: 0.75rem;
         }
-
-        .acciones {
-            display: flex;
-            gap: 8px;
+        .precio-original {
+            text-decoration: line-through;
+            color: #888;
+            font-size: 0.9rem;
         }
-
-        @media (max-width: 768px) {
-            .panel {
-                padding: 15px;
-            }
-
-            th, td {
-                font-size: 12px;
-                padding: 8px;
-            }
-
-            .panel-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
+        .precio-oferta {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2e7d32;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <img src="/images/logo-puntofacil.png" alt="Logo Punto Fácil">
-    Ofertas vigentes
-</header>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center titulo-pagina">
+        <h2>🧾 Ofertas</h2>
+        <a href="/empleado/ofertas/nueva" class="btn btn-success">
+            + Nueva oferta
+        </a>
+    </div>
 
-<div class="contenedor">
-    <div class="panel">
+    <div class="row g-4">
+        <div class="col-md-4" th:each="o : ${ofertas}">
+            <div class="card card-oferta h-100">
+                <div th:if="${o.imagen != null}">
+                    <img th:src="@{'/uploads/' + ${o.imagen}}" class="card-img-top" alt="Imagen oferta">
+                </div>
+                <div th:if="${o.imagen == null}">
+                    <img src="/images/default.png" class="card-img-top" alt="Sin imagen">
+                </div>
 
-        <div class="panel-header">
-            <h2><i class="fa-solid fa-tags"></i> Ofertas vigentes</h2>
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${o.titulo}">Título oferta</h5>
+                    <p class="card-text" th:text="${o.descripcion}">Descripción</p>
 
-            <div>
-                <a href="/empleado/panel/admin" class="btn btn-secondary">
-                    <i class="fa-solid fa-arrow-left"></i> Volver al panel
-                </a>
-                <a href="/empleado/ofertas/nuevo" class="btn btn-green">
-                    <i class="fa-solid fa-plus"></i> Nueva oferta
-                </a>
+                    <p class="mb-1">
+                        <strong>Producto:</strong>
+                        <span th:text="${o.producto != null ? o.producto.nombre : 'Producto eliminado'}"></span>
+                    </p>
+
+                    <p class="mb-1">
+                        <strong>Descuento:</strong>
+                        <span th:text="${o.porcentaje}">0</span>%
+                    </p>
+
+                    <p class="mb-1">
+                        <span class="precio-original" th:if="${o.producto != null}"
+                              th:text="'$' + ${o.producto.precioBase}">Precio original</span><br/>
+                        <span class="precio-oferta" th:text="${o.precioOferta != null ? '$' + o.precioOferta : '—'}">Precio oferta</span>
+                    </p>
+
+                    <!-- 🔹 AQUÍ ESTABA EL ERROR: expresión en una sola línea y usando #temporals -->
+                    <p class="mt-2">
+                        <span class="badge bg-info badge-vigencia"
+                              th:text="${o.fechaInicio != null} ? 
+                                       ${#temporals.format(o.fechaInicio, 'dd/MM/yyyy')} + 
+                                       (${o.fechaFin} != null ? ' al ' + ${#temporals.format(o.fechaFin, 'dd/MM/yyyy')} : ' (sin fin definido)') 
+                                       : 'Sin fecha'">
+                            01/01/2025 al 05/01/2025
+                        </span>
+                    </p>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <a th:href="@{'/empleado/ofertas/editar/' + ${o.id}}" class="btn btn-sm btn-primary">
+                        Editar
+                    </a>
+                    <form th:action="@{'/empleado/ofertas/eliminar/' + ${o.id}}" method="post"
+                          onsubmit="return confirm('¿Eliminar esta oferta?');">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            Eliminar
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
 
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Título</th>
-                <th>Producto</th>
-                <th>% Desc.</th>
-                <th>Precio oferta</th>
-                <th>Imagen</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="o : ${ofertas}">
-                <td th:text="${o.id}">1</td>
-                <td th:text="${o.titulo}">Título</td>
-                <td th:text="${o.producto != null ? o.producto.nombre : 'Sin producto'}">
-                    Producto
-                </td>
-                <td>
-                    <span class="badge-desc" th:text="${o.porcentaje} + '%'">0%</span>
-                </td>
-                <td class="precio"
-                    th:text="${#numbers.formatDecimal(o.precioOferta, 1, 2)}">
-                    $0,00
-                </td>
-                <td>
-                    <img th:if="${o.imagen != null}"
-                         th:src="@{'/uploads/' + ${o.imagen}}"
-                         alt="Imagen oferta"
-                         width="80"
-                         class="img-oferta">
-                    <span th:if="${o.imagen == null}" class="sin-datos">Sin imagen</span>
-                </td>
-            </tr>
-
-            <tr th:if="${#lists.isEmpty(ofertas)}">
-                <td colspan="6" class="sin-datos">
-                    No hay ofertas cargadas.
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
+        <div th:if="${#lists.isEmpty(ofertas)}" class="col-12 text-center mt-5">
+            <p>No hay ofertas cargadas.</p>
+        </div>
     </div>
 </div>
 

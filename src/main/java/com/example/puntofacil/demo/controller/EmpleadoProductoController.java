@@ -85,7 +85,28 @@ public class EmpleadoProductoController {
         return "redirect:/empleado/productos";
     }
 
-    // ELIMINAR
+    // 🔴 NUEVO: BORRAR (usado por el formulario POST /empleado/productos/borrar/{id})
+    @PostMapping("/borrar/{id}")
+    public String borrar(@PathVariable Long id) {
+
+        productoRepository.findById(id).ifPresent(p -> {
+            // Intentar borrar la imagen física si existe
+            String img = p.getImagen();
+            if (img != null && !img.isBlank()) {
+                try {
+                    Path ruta = Paths.get(uploadPath).resolve(img);
+                    Files.deleteIfExists(ruta);
+                } catch (IOException e) {
+                    // Si falla, no rompemos nada; en un futuro se puede loguear
+                }
+            }
+            productoRepository.delete(p);
+        });
+
+        return "redirect:/empleado/productos";
+    }
+
+    // (Opcional) El viejo endpoint /eliminar/{id} sigue existiendo por compatibilidad
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id) {
         productoRepository.deleteById(id);

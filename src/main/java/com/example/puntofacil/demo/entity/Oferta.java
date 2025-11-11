@@ -1,9 +1,14 @@
 package com.example.puntofacil.demo.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,29 +24,39 @@ public class Oferta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String titulo;
 
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String descripcion;
 
-    // Precio final con descuento aplicado
-    @Column(name = "precio_oferta")
+    // porcentaje de descuento (ej: 20 = 20%)
+    @Column(precision = 5, scale = 2)
+    private BigDecimal porcentaje;
+
+    @Column(name = "precio_oferta", precision = 10, scale = 2)
     private BigDecimal precioOferta;
 
-    // Porcentaje de descuento (0 a 100)
-    private Integer porcentaje;
-
-    // Nombre del archivo de imagen
+    // nombre de archivo de la imagen
+    @Column(length = 255)
     private String imagen;
 
-    // Relación con Producto (FK: producto_id)
-    @ManyToOne
-    @JoinColumn(name = "producto_id", nullable = false)
+    // 🔹 Vigencia
+    @Column(name = "fecha_inicio")
+    private LocalDate fechaInicio;
+
+    @Column(name = "fecha_fin")
+    private LocalDate fechaFin;
+
+    // 🔹 Relación con producto (puede ser null si el producto fue borrado)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "producto_id")
+    @NotFound(action = NotFoundAction.IGNORE) // ⬅️ si no existe el producto, deja null en vez de romper
     private Producto producto;
 
     public Oferta() {}
 
-    // ===== GETTERS Y SETTERS =====
+    // Getters y setters
 
     public Long getId() { return id; }
 
@@ -55,20 +70,27 @@ public class Oferta {
 
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
+    public BigDecimal getPorcentaje() { return porcentaje; }
+
+    public void setPorcentaje(BigDecimal porcentaje) { this.porcentaje = porcentaje; }
+
     public BigDecimal getPrecioOferta() { return precioOferta; }
 
     public void setPrecioOferta(BigDecimal precioOferta) { this.precioOferta = precioOferta; }
-
-    public Integer getPorcentaje() { return porcentaje; }
-
-    public void setPorcentaje(Integer porcentaje) { this.porcentaje = porcentaje; }
 
     public String getImagen() { return imagen; }
 
     public void setImagen(String imagen) { this.imagen = imagen; }
 
+    public LocalDate getFechaInicio() { return fechaInicio; }
+
+    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
+
+    public LocalDate getFechaFin() { return fechaFin; }
+
+    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
+
     public Producto getProducto() { return producto; }
 
     public void setProducto(Producto producto) { this.producto = producto; }
 }
-

@@ -13,6 +13,19 @@
         .price { color: #007bff; font-weight: bold; }
         .btn-primary { background-color: #007bff; border: none; }
         .btn-primary:hover { background-color: #0056b3; }
+
+        /* Ofertas */
+        .oferta-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #e53935;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -30,19 +43,97 @@
 
 <div class="container py-5">
     <h2 class="text-center mb-4">Productos disponibles</h2>
+
+    <!-- 🔥 SECCIÓN DE OFERTAS (solo si hay ofertas vigentes) -->
+    <div th:if="${ofertas != null and !ofertas.isEmpty()}" class="mb-5">
+        <h4 class="mb-3">🔥 Ofertas del día</h4>
+        <div class="row g-3">
+            <div class="col-md-4" th:each="o : ${ofertas}">
+                <div class="card border-success h-100 position-relative">
+
+                    <!-- Badge de % de descuento -->
+                    <div class="oferta-badge"
+                         th:text="${o.porcentaje + '% OFF'}">
+                        10% OFF
+                    </div>
+
+                    <!-- Imagen de la oferta -->
+                    <img th:if="${o.imagen != null}"
+                         th:src="@{'/uploads/' + ${o.imagen}}"
+                         class="card-img-top"
+                         alt="Imagen oferta"
+                         style="height: 160px; object-fit: cover;">
+                    <img th:if="${o.imagen == null}"
+                         src="/images/default.png"
+                         class="card-img-top"
+                         alt="Oferta"
+                         style="height: 160px; object-fit: cover;">
+
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${o.titulo}">Título oferta</h5>
+
+                        <p class="mb-1">
+                            <strong>Producto:</strong>
+                            <span th:text="${o.producto != null ? o.producto.nombre : 'N/D'}">Producto</span>
+                        </p>
+
+                        <!-- precios -->
+                        <p class="mb-1">
+                            <span class="text-muted text-decoration-line-through"
+                                  th:text="${o.producto != null ? '$' + o.producto.precioBase : ''}">
+                                $0.00
+                            </span>
+                        </p>
+                        <p class="mb-1">
+                            <strong>Precio oferta:</strong>
+                            <span class="text-success fw-bold"
+                                  th:text="${'$' + o.precioOferta}">
+                                $0.00
+                            </span>
+                        </p>
+
+                        <!-- Fechas de la oferta: USAMOS #temporals EN VEZ DE #dates -->
+                        <p class="small text-muted"
+                           th:if="${o.fechaInicio != null and o.fechaFin != null}">
+                            <span th:text="${#temporals.format(o.fechaInicio,'dd/MM/yyyy')}"></span>
+                            <span> al </span>
+                            <span th:text="${#temporals.format(o.fechaFin,'dd/MM/yyyy')}"></span>
+                        </p>
+
+                        <p class="small text-muted"
+                           th:if="${o.fechaInicio != null and o.fechaFin == null}">
+                            <span>Desde </span>
+                            <span th:text="${#temporals.format(o.fechaInicio,'dd/MM/yyyy')}"></span>
+                        </p>
+
+                        <p class="small text-muted"
+                           th:if="${o.fechaInicio == null and o.fechaFin != null}">
+                            <span>Hasta </span>
+                            <span th:text="${#temporals.format(o.fechaFin,'dd/MM/yyyy')}"></span>
+                        </p>
+
+                        <p class="small" th:if="${o.descripcion != null}" th:text="${o.descripcion}">
+                            Descripción de la oferta
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 🔥 FIN SECCIÓN OFERTAS -->
+
+    <!-- 🛒 GRID DE PRODUCTOS -->
     <div class="row g-4">
         <div class="col-md-4" th:each="p : ${productos}">
             <div class="card h-100 text-center">
 
-                <!-- 🖼️ Imagen del producto -->
-                <!-- Si el producto tiene imagen, se muestra la subida -->
+                <!-- Imagen del producto -->
                 <img th:if="${p.imagen != null}"
                      th:src="@{'/uploads/' + ${p.imagen}}"
                      class="card-img-top"
-                     alt="Imagen [[${p.nombre}]]"
+                     th:alt="${p.nombre}"
                      style="height: 180px; object-fit: cover;">
 
-                <!-- Si NO tiene imagen, se usa la imagen por defecto -->
                 <img th:if="${p.imagen == null}"
                      src="/images/default.png"
                      class="card-img-top"
@@ -60,7 +151,7 @@
                         <span th:text="${p.stock}"></span>
                         <span th:text="${p.unidadMedida}"></span>
                     </p>
-                    <p class="price" th:text="'$' + ${p.precioBase}"></p>
+                    <p class="price" th:text="'$' + ${p.precioBase}">$0.00</p>
 
                     <form th:action="@{/usuario/carrito/agregar}" method="post">
                         <input type="hidden" name="idProducto" th:value="${p.id}">
@@ -70,6 +161,7 @@
             </div>
         </div>
     </div>
+    <!-- 🛒 FIN GRID PRODUCTOS -->
 </div>
 </body>
 </html>

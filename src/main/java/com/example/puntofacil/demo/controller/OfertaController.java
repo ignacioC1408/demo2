@@ -6,6 +6,8 @@ import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +33,7 @@ public class OfertaController {
     private final OfertaRepository ofertaRepository;
     private final ProductoRepository productoRepository;
 
-    @Value("${upload.path:./uploads}")
+    @Value("${upload.path}")
     private String uploadPath;
 
     public OfertaController(OfertaRepository ofertaRepository,
@@ -39,7 +42,7 @@ public class OfertaController {
         this.productoRepository = productoRepository;
     }
 
-    // Listado de ofertas
+    // LISTAR OFERTAS
     @GetMapping
     public String listar(Model model) {
         List<Oferta> ofertas = ofertaRepository.findAll();
@@ -47,55 +50,85 @@ public class OfertaController {
         return "ofertas-list";
     }
 
-    // Formulario nueva oferta
-    @GetMapping("/nuevo")
-    public String nuevaOferta(Model model) {
-        model.addAttribute("oferta", new Oferta());
+    // NUEVA OFERTA
+    @GetMapping("/nueva")
+    public String nueva(Model model) {
+        Oferta oferta = new Oferta();
+        oferta.setFechaInicio(LocalDate.now()); // por defecto hoy
+        model.addAttribute("oferta", oferta);
         model.addAttribute("productos", productoRepository.findAll());
         return "oferta-form";
     }
 
-    // Guardar oferta
-    @PostMapping("/guardar")
-    public String guardarOferta(@ModelAttribute Oferta oferta,
-                                @RequestParam("imagenFile") MultipartFile imagenFile) throws IOException {
+    // EDITAR OFERTA
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable Long id, Model model) {
+        Oferta oferta = ofertaRepository.findById(id).orElse(null);
+        if (oferta == null) {
+            return "redirect:/empleado/ofertas";
+        }
+        model.addAttribute("oferta", oferta);
+        model.addAttribute("productos", productoRepository.findAll());
+        return "oferta-form";
+    }
 
-        // 1️⃣ Recuperar el producto desde la BD
-        Producto prod = null;
+    // GUARDAR / ACTUALIZAR OFERTA
+    @PostMapping("/guardar")
+    public String guardar(@ModelAttribute Oferta oferta,
+                          @RequestParam("imagenFile") MultipartFile imagenFile) throws IOException {
+
+        // 🔹 Si trae producto.id desde el form, lo resolvemos bien desde la base
         if (oferta.getProducto() != null && oferta.getProducto().getId() != null) {
-            prod = productoRepository.findById(oferta.getProducto().getId()).orElse(null);
+            Producto prod = productoRepository.findById(oferta.getProducto().getId())
+                    .orElse(null);
+            oferta.setProducto(prod);
         }
 
-        // 2️⃣ Calcular precio de oferta usando porcentaje
-        if (prod != null && prod.getPrecioBase() != null && oferta.getPorcentaje() != null) {
-            BigDecimal cien = BigDecimal.valueOf(100);
-            BigDecimal descuento = cien.subtract(BigDecimal.valueOf(oferta.getPorcentaje()));
-            BigDecimal precioCalculado = prod.getPrecioBase()
-                    .multiply(descuento)
+        // 🔹 Imagen: si no sube nueva y está editando, conservar la anterior
+        if (oferta.getId() != null && (imagenFile == null || imagenFile.isEmpty())) {
+            ofertaRepository.findById(oferta.getId())
+                    .ifPresent(oAnt -> oferta.setImagen(oAnt.getImagen()));
+        }
+
+        // 🔹 Si viene archivo nuevo, lo guardamos en ./uploads
+        if (imagenFile != null && !imagenFile.isEmpty()) {
+            Path uploadDir = Paths.get(uploadPath);
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+
+            String fileName = System.currentTimeMillis() + "_" + imagenFile.getOriginalFilename();
+            Path destino = uploadDir.resolve(fileName);
+            Files.copy(imagenFile.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+            oferta.setImagen(fileName);
+        }
+
+        // 🔹 Si tiene producto y porcentaje, calculamos precioOferta automáticamente
+        if (oferta.getProducto() != null &&
+            oferta.getProducto().getPrecioBase() != null &&
+            oferta.getPorcentaje() != null) {
+
+            BigDecimal cien = new BigDecimal("100");
+            BigDecimal desc = oferta.getProducto().getPrecioBase()
+                    .multiply(oferta.getPorcentaje())
                     .divide(cien, 2, RoundingMode.HALF_UP);
 
-            oferta.setProducto(prod);
-            oferta.setPrecioOferta(precioCalculado);
-        } else if (prod != null && prod.getPrecioBase() != null) {
-            // Fallback: sin porcentaje, usar precio base
-            oferta.setProducto(prod);
-            oferta.setPrecioOferta(prod.getPrecioBase());
+            oferta.setPrecioOferta(oferta.getProducto().getPrecioBase().subtract(desc));
         }
 
-        // 3️⃣ Guardar imagen si se subió
-        if (imagenFile != null && !imagenFile.isEmpty()) {
-            Path directorio = Paths.get(uploadPath).toAbsolutePath().normalize();
-            Files.createDirectories(directorio);
-
-            String nombreArchivo = System.currentTimeMillis() + "_" + imagenFile.getOriginalFilename();
-            Path rutaArchivo = directorio.resolve(nombreArchivo);
-
-            imagenFile.transferTo(rutaArchivo.toFile());
-            oferta.setImagen(nombreArchivo);
+        // 🔹 Si no puso fecha de inicio, por defecto hoy
+        if (oferta.getFechaInicio() == null) {
+            oferta.setFechaInicio(LocalDate.now());
         }
 
         ofertaRepository.save(oferta);
         return "redirect:/empleado/ofertas";
     }
-}
 
+    // ELIMINAR OFERTA
+    @PostMapping("/eliminar/{id}")
+    public String eliminar(@PathVariable Long id) {
+        ofertaRepository.deleteById(id);
+        return "redirect:/empleado/ofertas";
+    }
+}

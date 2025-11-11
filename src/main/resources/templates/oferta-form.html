@@ -58,9 +58,15 @@
 </head>
 <body>
 <div class="container">
-    <h2><i class="fa-solid fa-tags"></i> Nueva Oferta</h2>
+    <h2>
+        <i class="fa-solid fa-tags"></i>
+        <span th:text="${oferta.id == null} ? 'Nueva Oferta' : 'Editar Oferta'"></span>
+    </h2>
 
     <form th:action="@{/empleado/ofertas/guardar}" th:object="${oferta}" method="post" enctype="multipart/form-data">
+        <!-- hidden para edición -->
+        <input type="hidden" th:field="*{id}"/>
+
         <label>Título:</label>
         <input type="text" th:field="*{titulo}" required>
 
@@ -69,17 +75,34 @@
 
         <label>Producto asociado:</label>
         <select th:field="*{producto.id}" required>
-            <option th:each="p : ${productos}" th:value="${p.id}" th:text="${p.nombre}"></option>
+            <option value="">-- Seleccionar producto --</option>
+            <option th:each="p : ${productos}"
+                    th:value="${p.id}"
+                    th:text="${p.nombre}">
+            </option>
         </select>
 
         <label>Porcentaje de descuento (%):</label>
-        <input type="number" th:field="*{porcentaje}" min="0" max="100" required>
+        <input type="number" th:field="*{porcentaje}" min="0" max="100" step="0.01" required>
         <small>Ej: 20 = 20% de descuento sobre el precio base del producto.</small>
+
+        <label>Fecha de inicio:</label>
+        <input type="date" th:field="*{fechaInicio}">
+
+        <label>Fecha de fin:</label>
+        <input type="date" th:field="*{fechaFin}">
+        <small>Si dejás la fecha de fin vacía, se considera vigente desde la fecha de inicio en adelante.</small>
 
         <label>Imagen:</label>
         <input type="file" name="imagenFile" accept="image/*">
+        <small th:if="${oferta.imagen != null}">
+            Imagen actual:
+            <a th:href="@{'/uploads/' + ${oferta.imagen}}" target="_blank" th:text="${oferta.imagen}"></a>
+        </small>
 
-        <button type="submit"><i class="fa fa-save"></i> Guardar Oferta</button>
+        <button type="submit">
+            <i class="fa fa-save"></i> Guardar Oferta
+        </button>
     </form>
 </div>
 </body>
