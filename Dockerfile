@@ -5,15 +5,19 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
+# Compila el jar (sin tests para acelerar)
 RUN mvn -B -DskipTests package
 
 # Etapa 2: runtime con JRE 21
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-COPY --from=build /app/target/*.jar app.jar
+# Copiá el jar compilado
+COPY --from=build /app/target/*.jar /app/app.jar
 
-# Tu app corre en el puerto 8082 (por tu captura de localhost:8082)
-EXPOSE 8082
+# (Opcional) el EXPOSE es informativo; dejamos 8080 por convención
+EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+# ⚠️ Clave: bindear al puerto que Render inyecta en $PORT
+# y activar el perfil 'render' si existe
+CMD ["sh","-c","java -Dserver.port=${PORT:-8080} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-render} -jar /app/app.jar"]
