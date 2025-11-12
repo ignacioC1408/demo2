@@ -19,6 +19,9 @@
     <name>demo</name>
     <description>Proyecto Punto Fácil - Gestión y ventas</description>
 
+    <!-- ✅ dejamos explícito que el empaquetado es un JAR ejecutable -->
+    <packaging>jar</packaging>
+
     <properties>
         <java.version>21</java.version>
     </properties>
@@ -159,7 +162,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Plugin Spring Boot -->
+            <!-- Plugin Spring Boot: genera el JAR ejecutable -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
